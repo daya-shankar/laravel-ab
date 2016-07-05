@@ -1,4 +1,4 @@
-Laravel A/B Testing
+Laravel A/B Testing (Can blacklist a list of IP addresses)
 ===================
 
 [![Build Status](http://img.shields.io/travis/jenssegers/laravel-ab.svg)](https://travis-ci.org/jenssegers/laravel-ab) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/laravel-ab.svg)](https://coveralls.io/r/jenssegers/laravel-ab)
@@ -57,6 +57,16 @@ Without goals, each experiment will track the number of visitors that saw the ex
     ]
 
 Your goals can be relative urls, named routes or can be triggered manually.
+
+### Blacklist IP Addresses
+
+Small update added by me to blacklist certain IP addresses from being tracked by AB tests.:
+
+    'ipaddresses' => [
+        '113.200.181.200',
+        '113.200.181.111'
+    ]
+
 
 Preparing the A/B test database
 -------------------------------
