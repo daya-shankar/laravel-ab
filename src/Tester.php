@@ -38,6 +38,9 @@ class Tester {
         // Don't track if there is no active experiment.
         if ( ! $this->session->get('experiment')) return;
 
+        // Don't track for ip addresses in the config file
+        if( $this->shouldNotTrackIP()) return;
+
         // Since there is an ongoing experiment, increase the pageviews.
         // This will only be incremented once during the whole experiment.
         $this->pageview();
@@ -70,6 +73,31 @@ class Tester {
     }
 
     /**
+     * If the IP Addresses should be tracked or not.
+     * IP addresses are configured in the config file
+     *
+     * @param
+     * @return bool
+     */
+    public function shouldNotTrackIP()
+    {
+      // Get blocked ip addresses
+      $ip_array = $this->getBlockedIP();
+
+      // Get current ip address of the client
+      $current_ip = $_SERVER['REMOTE_ADDR'];
+
+      //check if current Ip is present in the ip_array.
+      // Return true if present
+      if(in_array($current_ip,$ip_array))
+      {
+        return true;
+      }
+
+      return false;
+    }
+
+    /**
      * Get or compare the current experiment for this session.
      *
      * @param  string  $target
@@ -98,6 +126,9 @@ class Tester {
         // Only interact once per experiment.
         if ($this->session->get('pageview')) return;
 
+        // Don't track pageviews for ip addresses in the config file
+        if( $this->shouldNotTrackIP()) return;
+
         $experiment = Experiment::firstOrNew(['name' => $this->experiment()]);
         $experiment->visitors++;
         $experiment->save();
@@ -116,6 +147,9 @@ class Tester {
         // Only interact once per experiment.
         if ($this->session->get('interacted')) return;
 
+        // Don't track engagement for ip addresses in the config file
+        if( $this->shouldNotTrackIP()) return;
+
         $experiment = Experiment::firstOrNew(['name' => $this->experiment()]);
         $experiment->engagement++;
         $experiment->save();
@@ -133,6 +167,9 @@ class Tester {
     {
         // Only complete once per experiment.
         if ($this->session->get("completed_$name")) return;
+
+        // Don't track goals for ip addresses in the config file
+        if( $this->shouldNotTrackIP()) return;
 
         $goal = Goal::firstOrCreate(['name' => $name, 'experiment' => $this->experiment()]);
         Goal::where('name', $name)->where('experiment', $this->experiment())->update(['count' => ($goal->count + 1)]);
@@ -175,6 +212,17 @@ class Tester {
     public function getGoals()
     {
         return Config::get('ab::goals', []);
+    }
+
+
+    /**
+     * Get all ips that have to be blocked.
+     *
+     * @return array
+     */
+    public function getBlockedIP()
+    {
+        return Config::get('ab::ipaddresses', []);
     }
 
     /**

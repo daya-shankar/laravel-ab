@@ -39,4 +39,18 @@ return array(
 
     'goals' => [],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | IP Addresses that need to be blocked from tracking
+    |--------------------------------------------------------------------------
+    |
+    | A list of ipv4 addresses that should not be tracked when tracking experiments and goals
+    |
+    | Example: ['113.200.181.200', '113.200.181.122']
+    |
+    */
+
+    'ipaddresses' => [],
+
 );
